@@ -42,7 +42,20 @@ class TaskListViewController: UITableViewController {
         var content = cell.defaultContentConfiguration()
         let taskList = taskLists[indexPath.row]
         content.text = taskList.name
-        content.secondaryText = "\(taskList.tasks.count)"
+        
+        let currentTasks = taskList.tasks.filter("isComplete = false")
+        
+        if currentTasks.isEmpty {
+            content.secondaryText = ""
+            cell.accessoryType = .checkmark
+        } else if taskList.tasks.isEmpty {
+            content.secondaryText = "0"
+            cell.accessoryType = .none
+        } else {
+            content.secondaryText = "\(currentTasks.count)"
+            cell.accessoryType = .none
+        }
+        
         cell.contentConfiguration = content
         return cell
     }
@@ -87,11 +100,10 @@ class TaskListViewController: UITableViewController {
         switch sender.selectedSegmentIndex {
         case 0:
             taskLists = taskLists.sorted(byKeyPath: "date")
-            tableView.reloadData()
         default:
             taskLists = taskLists.sorted(byKeyPath: "name")
-            tableView.reloadData()
         }
+        tableView.reloadData()
     }
     
     @objc private func addButtonPressed() {
